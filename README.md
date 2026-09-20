@@ -6,15 +6,18 @@
 
 > Replace `<OWNER>` with the GitHub account once the repo is published.
 
-A machine-learning model used in a medical device keeps changing after it ships: the
-patients, scanners, and sites it sees drift away from the data it was tested on, so its
-accuracy quietly moves even though nobody edited a line of code. The FDA's Predetermined
-Change Control Plan (PCCP) lets a manufacturer pre-authorize a bounded set of such changes
-instead of re-filing for every retrain. This tool is the evidence engine for that bargain:
-it takes a locked performance baseline and periodic performance snapshots, decides with
-explicit statistical confidence whether the model has drifted, whether a proposed change
-falls inside the PCCP, and whether any patient subgroup is being under-served, then emits
-an auditable evidence package that a human reviewer signs off on.
+**Drift evidence for FDA-regulated ML: proves a deployed model stayed inside its
+Predetermined Change Control Plan, or flags where it did not.**
+
+A machine-learning model in a medical device keeps changing after it ships: the patients,
+scanners, and sites it sees drift away from its test data, so its accuracy moves even though
+nobody edited any code. The FDA's Predetermined Change Control Plan (PCCP) lets a
+manufacturer pre-authorize a bounded set of such changes instead of re-filing for every
+retrain, in exchange for proof that the model stayed inside the bounds. This tool produces
+that proof: from a locked baseline and periodic performance snapshots it reports, with
+explicit statistical confidence, whether the model drifted, whether a proposed change is
+covered by the PCCP, and whether any patient subgroup is under-served, as an auditable
+evidence package for a human reviewer to sign off.
 
 ## What it does
 

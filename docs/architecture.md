@@ -1,5 +1,7 @@
 # Architecture
 
+Part of [ml-samd-validator](../README.md); see the README for setup, API, and regulatory framing.
+
 `ml-samd-validator` implements the Inspector role: it evaluates a model's performance
 snapshots against a locked baseline and a Predetermined Change Control Plan (PCCP), and emits
 structured evidence for human review. It never trains models, never classifies raw clinical
@@ -23,6 +25,10 @@ flowchart LR
     R --> J[ValidationEvidence JSON<br/>schema_version 1.0]
     J --> T[traceability-matrix-dhf]
 ```
+
+IEC 62304 software safety classification and ISO 14971 risk management language appear in
+every evaluation report (`DriftReport`, model card, `ValidationEvidence`); the sections below
+define how each is derived.
 
 Modules: `schemas/models.py` (Pydantic v2, `extra="forbid"`), `app/core.py` (drift, PCCP,
 fairness), `app/report.py` (model card, PDF, JSON export), `app/main.py` (FastAPI).
