@@ -182,9 +182,9 @@ approximation, which is weak for small subgroups (they correctly land in lower b
 
 - [SaMD-Val-Kit](https://github.com/LSaiko/SaMD-Val-Kit): validation protocol templates
   and V&V planning for SaMD.
-- [traceability-matrix-dhf](https://github.com/LSaiko/traceability-matrix-dhf) (in
-  progress): consumes the `ValidationEvidence` JSON and links each finding to design-history
-  file requirements.
+- [traceability-matrix-dhf](https://github.com/LSaiko/traceability-matrix-dhf)
+  ([live demo](https://LSaiko.github.io/traceability-matrix-dhf/)): consumes the
+  `ValidationEvidence` JSON and links each finding to design-history file requirements.
 
 ## Interview Q&A
 
