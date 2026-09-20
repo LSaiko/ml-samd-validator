@@ -18,6 +18,19 @@ explicit statistical confidence, whether the model drifted, whether a proposed c
 covered by the PCCP, and whether any patient subgroup is under-served, as an auditable
 evidence package for a human reviewer to sign off.
 
+## Contents
+
+- [Core use case](#core-use-case)
+- [What it does](#what-it-does)
+- [Architecture](#architecture)
+- [Setup](#setup)
+- [API](#api)
+- [Regulatory framing](#regulatory-framing)
+- [Interview talking points](#interview-talking-points)
+- [Related projects](#related-projects)
+- [Interview Q&A](#interview-qa)
+- [License](#license)
+
 ## Core use case
 
 A manufacturer ships a chest-X-ray triage model (FDA SaMD class II) with a PCCP that
