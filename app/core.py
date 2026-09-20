@@ -10,6 +10,7 @@ cohorts; confidence = 1 - p_value is then routed through the three bands in ``ba
 from __future__ import annotations
 
 import math
+from typing import Literal
 
 from scipy.stats import norm
 
@@ -29,7 +30,7 @@ from schemas import (
     band_for,
 )
 
-IEC_62304_CLASS: dict[RiskClass, str] = {
+IEC_62304_CLASS: dict[RiskClass, Literal["A", "B", "C"]] = {
     RiskClass.I: "A",
     RiskClass.II: "B",
     RiskClass.III: "C",

@@ -1,0 +1,672 @@
+{
+  "$defs": {
+    "ConfidenceBand": {
+      "enum": [
+        "HIGH",
+        "AMBIGUOUS",
+        "LOW"
+      ],
+      "title": "ConfidenceBand",
+      "type": "string"
+    },
+    "DriftReport": {
+      "additionalProperties": false,
+      "properties": {
+        "model_id": {
+          "title": "Model Id",
+          "type": "string"
+        },
+        "snapshot_timestamp": {
+          "format": "date-time",
+          "title": "Snapshot Timestamp",
+          "type": "string"
+        },
+        "metrics": {
+          "items": {
+            "$ref": "#/$defs/MetricDrift"
+          },
+          "title": "Metrics",
+          "type": "array"
+        },
+        "overall_band": {
+          "$ref": "#/$defs/ConfidenceBand"
+        },
+        "requires_human_review": {
+          "title": "Requires Human Review",
+          "type": "boolean"
+        },
+        "iec_62304_note": {
+          "title": "Iec 62304 Note",
+          "type": "string"
+        },
+        "iso_14971_note": {
+          "title": "Iso 14971 Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "model_id",
+        "snapshot_timestamp",
+        "metrics",
+        "overall_band",
+        "requires_human_review",
+        "iec_62304_note",
+        "iso_14971_note"
+      ],
+      "title": "DriftReport",
+      "type": "object"
+    },
+    "FairnessReport": {
+      "additionalProperties": false,
+      "properties": {
+        "model_id": {
+          "title": "Model Id",
+          "type": "string"
+        },
+        "threshold": {
+          "title": "Threshold",
+          "type": "number"
+        },
+        "findings": {
+          "items": {
+            "$ref": "#/$defs/SubgroupFinding"
+          },
+          "title": "Findings",
+          "type": "array"
+        },
+        "any_flagged": {
+          "title": "Any Flagged",
+          "type": "boolean"
+        },
+        "aggregate_passed": {
+          "title": "Aggregate Passed",
+          "type": "boolean"
+        },
+        "note": {
+          "default": "Subgroup flags may exist even when aggregate metrics pass; aggregate performance does not establish subgroup equity.",
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "model_id",
+        "threshold",
+        "findings",
+        "any_flagged",
+        "aggregate_passed"
+      ],
+      "title": "FairnessReport",
+      "type": "object"
+    },
+    "Iec62304Classification": {
+      "additionalProperties": false,
+      "properties": {
+        "safety_class": {
+          "enum": [
+            "A",
+            "B",
+            "C"
+          ],
+          "title": "Safety Class",
+          "type": "string"
+        },
+        "rationale": {
+          "title": "Rationale",
+          "type": "string"
+        }
+      },
+      "required": [
+        "safety_class",
+        "rationale"
+      ],
+      "title": "Iec62304Classification",
+      "type": "object"
+    },
+    "Iso14971Summary": {
+      "additionalProperties": false,
+      "properties": {
+        "hazards": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Hazards",
+          "type": "array"
+        },
+        "risk_controls": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Risk Controls",
+          "type": "array"
+        },
+        "residual_risk_statement": {
+          "title": "Residual Risk Statement",
+          "type": "string"
+        }
+      },
+      "required": [
+        "hazards",
+        "risk_controls",
+        "residual_risk_statement"
+      ],
+      "title": "Iso14971Summary",
+      "type": "object"
+    },
+    "LockedMetrics": {
+      "additionalProperties": false,
+      "properties": {
+        "sensitivity": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Sensitivity",
+          "type": "number"
+        },
+        "specificity": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Specificity",
+          "type": "number"
+        },
+        "auc": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Auc",
+          "type": "number"
+        },
+        "f1": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "F1",
+          "type": "number"
+        },
+        "calibration_slope": {
+          "exclusiveMinimum": 0.0,
+          "maximum": 10.0,
+          "title": "Calibration Slope",
+          "type": "number"
+        }
+      },
+      "required": [
+        "sensitivity",
+        "specificity",
+        "auc",
+        "f1",
+        "calibration_slope"
+      ],
+      "title": "LockedMetrics",
+      "type": "object"
+    },
+    "MetricDrift": {
+      "additionalProperties": false,
+      "properties": {
+        "metric": {
+          "enum": [
+            "sensitivity",
+            "specificity",
+            "auc",
+            "f1",
+            "calibration_slope"
+          ],
+          "title": "Metric",
+          "type": "string"
+        },
+        "baseline_value": {
+          "title": "Baseline Value",
+          "type": "number"
+        },
+        "snapshot_value": {
+          "title": "Snapshot Value",
+          "type": "number"
+        },
+        "delta": {
+          "title": "Delta",
+          "type": "number"
+        },
+        "p_value": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "P Value",
+          "type": "number"
+        },
+        "confidence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "band": {
+          "$ref": "#/$defs/ConfidenceBand"
+        },
+        "reasoning": {
+          "title": "Reasoning",
+          "type": "string"
+        }
+      },
+      "required": [
+        "metric",
+        "baseline_value",
+        "snapshot_value",
+        "delta",
+        "p_value",
+        "confidence",
+        "band",
+        "reasoning"
+      ],
+      "title": "MetricDrift",
+      "type": "object"
+    },
+    "ModelBaseline": {
+      "additionalProperties": false,
+      "properties": {
+        "model_id": {
+          "minLength": 1,
+          "title": "Model Id",
+          "type": "string"
+        },
+        "version": {
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        },
+        "locked_metrics": {
+          "$ref": "#/$defs/LockedMetrics"
+        },
+        "baseline_date": {
+          "format": "date",
+          "title": "Baseline Date",
+          "type": "string"
+        },
+        "dataset_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Dataset Hash",
+          "type": "string"
+        },
+        "risk_classification": {
+          "$ref": "#/$defs/RiskClass"
+        },
+        "sample_size": {
+          "exclusiveMinimum": 0,
+          "title": "Sample Size",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "model_id",
+        "version",
+        "locked_metrics",
+        "baseline_date",
+        "dataset_hash",
+        "risk_classification",
+        "sample_size"
+      ],
+      "title": "ModelBaseline",
+      "type": "object"
+    },
+    "ModelCard": {
+      "additionalProperties": false,
+      "properties": {
+        "model_id": {
+          "minLength": 1,
+          "title": "Model Id",
+          "type": "string"
+        },
+        "version": {
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        },
+        "intended_use": {
+          "title": "Intended Use",
+          "type": "string"
+        },
+        "training_data_summary": {
+          "title": "Training Data Summary",
+          "type": "string"
+        },
+        "performance_by_subgroup": {
+          "items": {
+            "$ref": "#/$defs/SubgroupMetrics"
+          },
+          "title": "Performance By Subgroup",
+          "type": "array"
+        },
+        "known_limitations": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Known Limitations",
+          "type": "array"
+        },
+        "pccp_reference": {
+          "title": "Pccp Reference",
+          "type": "string"
+        },
+        "gmlp_checklist": {
+          "additionalProperties": {
+            "type": "boolean"
+          },
+          "title": "Gmlp Checklist",
+          "type": "object"
+        },
+        "iec_62304_safety_class": {
+          "enum": [
+            "A",
+            "B",
+            "C"
+          ],
+          "title": "Iec 62304 Safety Class",
+          "type": "string"
+        },
+        "iso_14971_risk_controls": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Iso 14971 Risk Controls",
+          "type": "array"
+        }
+      },
+      "required": [
+        "model_id",
+        "version",
+        "intended_use",
+        "training_data_summary",
+        "pccp_reference",
+        "gmlp_checklist",
+        "iec_62304_safety_class"
+      ],
+      "title": "ModelCard",
+      "type": "object"
+    },
+    "PccpDecision": {
+      "additionalProperties": false,
+      "properties": {
+        "model_id": {
+          "title": "Model Id",
+          "type": "string"
+        },
+        "change_type": {
+          "title": "Change Type",
+          "type": "string"
+        },
+        "decision": {
+          "enum": [
+            "pre-authorized",
+            "requires new submission",
+            "insufficient information"
+          ],
+          "title": "Decision",
+          "type": "string"
+        },
+        "rationale": {
+          "title": "Rationale",
+          "type": "string"
+        },
+        "violated_boundaries": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Violated Boundaries",
+          "type": "array"
+        },
+        "confidence_band": {
+          "$ref": "#/$defs/ConfidenceBand"
+        }
+      },
+      "required": [
+        "model_id",
+        "change_type",
+        "decision",
+        "rationale",
+        "confidence_band"
+      ],
+      "title": "PccpDecision",
+      "type": "object"
+    },
+    "PerformanceSnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "model_id": {
+          "minLength": 1,
+          "title": "Model Id",
+          "type": "string"
+        },
+        "timestamp": {
+          "format": "date-time",
+          "title": "Timestamp",
+          "type": "string"
+        },
+        "metrics": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "title": "Metrics",
+          "type": "object"
+        },
+        "subgroup_breakdown": {
+          "items": {
+            "$ref": "#/$defs/SubgroupMetrics"
+          },
+          "title": "Subgroup Breakdown",
+          "type": "array"
+        },
+        "sample_size": {
+          "exclusiveMinimum": 0,
+          "title": "Sample Size",
+          "type": "integer"
+        },
+        "drift_from_baseline": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "number"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Drift From Baseline"
+        }
+      },
+      "required": [
+        "model_id",
+        "timestamp",
+        "metrics",
+        "sample_size"
+      ],
+      "title": "PerformanceSnapshot",
+      "type": "object"
+    },
+    "RiskClass": {
+      "description": "FDA SaMD risk categorization (IMDRF N12), I (lowest) to IV (highest).",
+      "enum": [
+        "I",
+        "II",
+        "III",
+        "IV"
+      ],
+      "title": "RiskClass",
+      "type": "string"
+    },
+    "SubgroupFinding": {
+      "additionalProperties": false,
+      "properties": {
+        "subgroup": {
+          "title": "Subgroup",
+          "type": "string"
+        },
+        "metric": {
+          "enum": [
+            "sensitivity",
+            "specificity",
+            "auc",
+            "f1",
+            "calibration_slope"
+          ],
+          "title": "Metric",
+          "type": "string"
+        },
+        "baseline_value": {
+          "title": "Baseline Value",
+          "type": "number"
+        },
+        "subgroup_value": {
+          "title": "Subgroup Value",
+          "type": "number"
+        },
+        "delta": {
+          "title": "Delta",
+          "type": "number"
+        },
+        "flagged": {
+          "title": "Flagged",
+          "type": "boolean"
+        },
+        "confidence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "band": {
+          "$ref": "#/$defs/ConfidenceBand"
+        },
+        "reasoning": {
+          "title": "Reasoning",
+          "type": "string"
+        }
+      },
+      "required": [
+        "subgroup",
+        "metric",
+        "baseline_value",
+        "subgroup_value",
+        "delta",
+        "flagged",
+        "confidence",
+        "band",
+        "reasoning"
+      ],
+      "title": "SubgroupFinding",
+      "type": "object"
+    },
+    "SubgroupMetrics": {
+      "additionalProperties": false,
+      "properties": {
+        "subgroup": {
+          "minLength": 1,
+          "title": "Subgroup",
+          "type": "string"
+        },
+        "metrics": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "title": "Metrics",
+          "type": "object"
+        },
+        "sample_size": {
+          "exclusiveMinimum": 0,
+          "title": "Sample Size",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "subgroup",
+        "metrics",
+        "sample_size"
+      ],
+      "title": "SubgroupMetrics",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Stable JSON export for traceability-matrix-dhf (docs/validation-evidence-schema.md).",
+  "properties": {
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "generated_at": {
+      "format": "date-time",
+      "title": "Generated At",
+      "type": "string"
+    },
+    "model_id": {
+      "title": "Model Id",
+      "type": "string"
+    },
+    "version": {
+      "title": "Version",
+      "type": "string"
+    },
+    "baseline": {
+      "$ref": "#/$defs/ModelBaseline"
+    },
+    "snapshot": {
+      "$ref": "#/$defs/PerformanceSnapshot"
+    },
+    "drift": {
+      "$ref": "#/$defs/DriftReport"
+    },
+    "fairness": {
+      "$ref": "#/$defs/FairnessReport"
+    },
+    "pccp_status": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PccpDecision"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "model_card": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ModelCard"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "iec_62304": {
+      "$ref": "#/$defs/Iec62304Classification"
+    },
+    "iso_14971": {
+      "$ref": "#/$defs/Iso14971Summary"
+    },
+    "evidence_id": {
+      "title": "Evidence Id",
+      "type": "string"
+    },
+    "requirement_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Requirement Ids",
+      "type": "array"
+    }
+  },
+  "required": [
+    "generated_at",
+    "model_id",
+    "version",
+    "baseline",
+    "snapshot",
+    "drift",
+    "fairness",
+    "iec_62304",
+    "iso_14971"
+  ],
+  "title": "ValidationEvidence",
+  "type": "object"
+}
