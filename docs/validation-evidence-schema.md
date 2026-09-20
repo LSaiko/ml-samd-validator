@@ -42,9 +42,9 @@ All objects are `extra="forbid"`: unknown keys are rejected on ingest.
 | Field | Meaning |
 |---|---|
 | `model_id`, `snapshot_timestamp` | Identity of the comparison. |
-| `metrics[]` | `MetricDrift`: `metric`, `baseline_value`, `snapshot_value`, `delta`, `p_value`, `confidence` (= 1 - p), `band`, `reasoning`. |
+| `metrics[]` | `MetricDrift`: `metric`, `baseline_value`, `snapshot_value`, `delta`, `p_value`, `verdict` (`stable` / `drifted` against the tolerance), `confidence` (in the verdict: `1 - p` if drifted, else the probability the true delta is within tolerance), `band`, `reasoning`. |
 | `overall_band` | Worst band across metrics: LOW > AMBIGUOUS > HIGH. |
-| `requires_human_review` | True when `overall_band != HIGH` or a PCCP `max_delta` boundary is exceeded. |
+| `requires_human_review` | True when `overall_band != HIGH` or any metric's `verdict` is `drifted`. |
 | `iec_62304_note` | Software safety class statement derived from `risk_classification`. |
 | `iso_14971_note` | Fixed risk-control statement. |
 
@@ -52,7 +52,7 @@ All objects are `extra="forbid"`: unknown keys are rejected on ingest.
 
 ### `FairnessReport`
 `model_id`, `threshold` (default 0.05), `findings[]` (`SubgroupFinding`: `subgroup`, `metric`,
-`baseline_value`, `subgroup_value`, `delta`, `flagged`, `confidence`, `band`, `reasoning`),
+`baseline_value`, `subgroup_value`, `delta`, `verdict`, `flagged` (= verdict `drifted`), `confidence`, `band`, `reasoning`),
 `any_flagged`, `aggregate_passed`, `note`.
 
 ### `PccpDecision`

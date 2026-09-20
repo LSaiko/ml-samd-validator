@@ -98,10 +98,12 @@ cd dashboard && npx tsc --noEmit && npm run build
   as a hazardous situation; the risk control is mandatory human review before deployment.
 - **GMLP**: the model card carries a checklist over the ten FDA/Health Canada/MHRA principles
   (representative data, independent test sets, deployed-model monitoring, ...).
-- **Three-band routing** on every finding, `confidence = 1 - p`:
-  HIGH (>= 0.80) pass-through; AMBIGUOUS (0.55-0.79) flagged for human interpretation with
-  reasoning attached; LOW (< 0.55) insufficient evidence, no conclusion asserted.
-  A report's overall band is the worst band present.
+- **Three-band routing** on every finding. Each metric gets a verdict against a tolerance
+  (PCCP `max_delta`, default 0.02): `drifted` with confidence `1 - p`, or `stable` with
+  confidence = probability the true delta is within tolerance (equivalence test). HIGH
+  (>= 0.80) stable passes through, HIGH drifted is flagged; AMBIGUOUS (0.55-0.79) flagged for
+  human interpretation with reasoning attached; LOW (< 0.55) insufficient evidence, no
+  conclusion asserted. A report's overall band is the worst band present.
 - **Inspector disclaimer**: the tool never trains models, never classifies clinical inputs,
   and never issues a go/no-go decision. It produces evidence and flags deviations.
 
@@ -119,13 +121,19 @@ envelope". That proof is exactly what this tool generates.
 between "we know it moved", "it might have moved but the sample is thin", and "we cannot
 tell". Mapping confidence to three bands lets the tool pass through only strongly supported
 findings, hand ambiguous ones to a reviewer with the reasoning attached, and refuse to
-assert anything on weak evidence. It is a deliberate encoding of the Inspector role: the
-tool must not be the one that quietly says "fine".
+assert anything on weak evidence. Confidence is confidence in the *verdict*, not in
+"something moved": `1 - p` is the wrong number for a stable model, because a failure to
+reject is not evidence of equivalence, so a stable verdict is scored with an equivalence
+(TOST-style) probability that the true delta sits inside the tolerance. A well-powered
+unchanged model is then HIGH and passes through; a tiny sample that cannot rule out drift is
+LOW. It is a deliberate encoding of the Inspector role: the tool must not be the one that
+quietly says "fine".
 
 **One concrete trade-off: z-test on summary metrics vs PSI/KS on score distributions.**
 Snapshots carry summary metrics and a sample size, not raw prediction scores, because that
 is what a monitoring pipeline can usually export without a PHI conversation. So drift is
-measured with a two-proportion z-test (pooled SE) on each metric. What that gives up: PSI or
+measured with a two-proportion z-test (pooled SE) on each metric, and the absence of drift
+with the matching equivalence probability. What that gives up: PSI or
 KS on the score distribution would detect input/output shift before it shows up in labelled
 metrics, but needs the raw scores; the z-test assumes independent samples and a normal
 approximation, which is weak for small subgroups (they correctly land in lower bands); and

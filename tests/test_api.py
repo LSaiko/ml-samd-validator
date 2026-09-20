@@ -15,12 +15,12 @@ def _reset() -> None:
         store.clear()
 
 
-def _snap(i: int, sens: float) -> dict:
+def _snap(i: int, sens: float, n: int = 500) -> dict:
     return {
         "model_id": "m1",
         "timestamp": datetime(2026, 3 + i, 1, tzinfo=UTC).isoformat(),
         "metrics": {"sensitivity": sens},
-        "sample_size": 500,
+        "sample_size": n,
         "subgroup_breakdown": [
             {"subgroup": "female", "metrics": {"sensitivity": sens - 0.06}, "sample_size": 200}
         ],
@@ -47,13 +47,16 @@ def test_full_flow() -> None:
     )
     assert client.post("/pccp", json=PCCP.model_dump(mode="json")).status_code == 200
     assert client.get("/model-card/m1").status_code == 404  # baseline but no snapshots yet
-    # sensitivity 0.9 @ n=1000 vs n=500: -0.005 LOW, -0.018 AMBIGUOUS, -0.05 HIGH (see test_core)
-    for i, sens in enumerate([0.895, 0.882, 0.85]):
-        r = client.post("/snapshot", json=_snap(i, sens)).json()
+    # sensitivity 0.9 @ n=1000: 0.9@2000 stable HIGH, 0.88@500 drifted AMBIGUOUS,
+    # 0.85@500 drifted HIGH (see test_core)
+    for i, (sens, n) in enumerate([(0.9, 2000), (0.88, 500), (0.85, 500)]):
+        r = client.post("/snapshot", json=_snap(i, sens, n)).json()
         assert r["snapshot"]["drift_from_baseline"]["sensitivity"] == pytest.approx(sens - 0.9)
         assert {"drift", "fairness"} <= r.keys()
     drift = client.get("/drift/m1").json()
-    assert [d["drift"]["overall_band"] for d in drift] == ["LOW", "AMBIGUOUS", "HIGH"]
+    assert [d["drift"]["overall_band"] for d in drift] == ["HIGH", "AMBIGUOUS", "HIGH"]
+    assert [d["drift"]["requires_human_review"] for d in drift] == [False, True, True]
+    assert [d["drift"]["metrics"][0]["verdict"] for d in drift] == ["stable", "drifted", "drifted"]
     assert all(d["fairness"]["any_flagged"] for d in drift)
 
     change = {

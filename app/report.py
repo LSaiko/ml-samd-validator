@@ -60,7 +60,7 @@ def build_model_card(
     hazards = [
         f"{m.metric} drift {m.delta:+.4f} ({m.band.value} confidence)"
         for m in drift.metrics
-        if m.band is not ConfidenceBand.HIGH or m.delta < 0
+        if m.band is not ConfidenceBand.HIGH or m.verdict == "drifted"
     ] + [
         f"subgroup {f.subgroup}: {f.metric} delta {f.delta:+.4f}"
         for f in fairness.findings

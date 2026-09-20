@@ -160,6 +160,7 @@ class MetricDrift(_Strict):
     snapshot_value: float
     delta: float
     p_value: float = Field(ge=0.0, le=1.0)
+    verdict: Literal["stable", "drifted"]
     confidence: float = Field(ge=0.0, le=1.0)
     band: ConfidenceBand
     reasoning: str
@@ -193,6 +194,7 @@ class SubgroupFinding(_Strict):
     baseline_value: float
     subgroup_value: float
     delta: float
+    verdict: Literal["stable", "drifted"]
     flagged: bool
     confidence: float = Field(ge=0.0, le=1.0)
     band: ConfidenceBand

@@ -35,23 +35,33 @@ fairness), `app/report.py` (model card, PDF, JSON export), `app/main.py` (FastAP
 
 ## Three-band confidence routing
 
-Every finding a human may act on carries `confidence = 1 - p_value` and a band:
+Every finding a human may act on carries a `verdict` (`stable` or `drifted`), a `confidence`
+in that verdict, and a band. The verdict is decided by a tolerance: the PCCP `max_delta` for the
+metric when a PCCP is supplied, else `DEFAULT_TOLERANCE` (0.02); subgroup checks use the
+fairness `threshold`. Confidence is verdict-conditional (see the statistical test below), so a
+well-powered snapshot that did not move is HIGH and passes through, rather than landing in LOW
+for lack of a detectable shift.
 
 | Band | Confidence | Routing |
 |---|---|---|
-| HIGH | >= 0.80 | pass-through; statistically supported |
-| AMBIGUOUS | 0.55-0.79 | flag for human interpretation, reasoning attached |
+| HIGH | >= 0.80 | stable: pass-through. drifted: statistically supported, flagged for review |
+| AMBIGUOUS | 0.55-0.79 | flag for human interpretation, verdict and reasoning attached |
 | LOW | < 0.55 | insufficient evidence; no conclusion asserted |
 
 A report's `overall_band` is the worst band present. `requires_human_review` is true unless the
-overall band is HIGH and no PCCP performance boundary is exceeded.
+overall band is HIGH and every metric's verdict is `stable`.
 
 ## Statistical test choice
 
 Snapshots carry metric-level summary statistics (sensitivity, specificity, AUC, F1,
 calibration slope) plus a sample size, not raw score distributions, so PSI/KL divergence is not
 applicable. Proportion-like metrics use a two-proportion z-test with pooled standard error
-between the baseline and snapshot cohorts (`scipy.stats.norm`, two-sided p). Calibration slope
+between the baseline and snapshot cohorts (`scipy.stats.norm`, two-sided p). If |delta| exceeds
+the tolerance the verdict is `drifted` and confidence = 1 - p. Otherwise the verdict is `stable`
+and confidence is the equivalence-style probability that the true delta lies within the
+tolerance, `Phi((tol - delta)/SE) - Phi((-tol - delta)/SE)`, the two one-sided tests (TOST) idea
+collapsed into one number; a thin sample that cannot rule out a shift beyond the tolerance gets
+low confidence in "stable" instead of a free pass. Calibration slope
 uses a one-sample-style z with SE approximated as `1/sqrt(n)`, a documented `ponytail:`
 simplification because the slope's SE requires the raw predictions. Subgroups reuse the same
 test with the subgroup's own `sample_size`, so small subgroups naturally land in lower bands.

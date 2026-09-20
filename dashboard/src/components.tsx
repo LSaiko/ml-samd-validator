@@ -71,7 +71,10 @@ export function DriftChart({ entries }: { entries: DriftEntry[] }) {
         {entries.map((e) => (
           <span key={e.snapshot_timestamp} className="snap">
             <small className="muted">{day(e.snapshot_timestamp)}</small>
-            <Chip band={e.drift.overall_band} />
+            <Chip
+              band={e.drift.overall_band}
+              label={`${e.drift.overall_band} · ${e.drift.metrics.some((m) => m.verdict === "drifted") ? "drifted" : "stable"}`}
+            />
             {e.drift.requires_human_review && <small className="review">review</small>}
           </span>
         ))}
@@ -113,7 +116,7 @@ export function FairnessTable({ entry }: { entry: DriftEntry }) {
               <td>{g}{flagged && <small className="review">flagged</small>}</td>
               {metrics.map((m) => {
                 const f = cell(g, m);
-                return <td key={m}>{f ? <>{signed(f.delta)} <Chip band={f.band} /></> : "-"}</td>;
+                return <td key={m}>{f ? <>{signed(f.delta)} <Chip band={f.band} label={`${f.band} · ${f.verdict}`} /></> : "-"}</td>;
               })}
             </tr>
           );
