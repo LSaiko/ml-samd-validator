@@ -18,6 +18,29 @@ explicit statistical confidence, whether the model drifted, whether a proposed c
 covered by the PCCP, and whether any patient subgroup is under-served, as an auditable
 evidence package for a human reviewer to sign off.
 
+## Core use case
+
+A manufacturer ships a chest-X-ray triage model (FDA SaMD class II) with a PCCP that
+pre-authorizes quarterly retraining as long as sensitivity, specificity, and AUC stay within
+±0.02 of the locked baseline. Each quarter the monitoring pipeline exports summary metrics
+per site and demographic subgroup — no raw scores, no PHI — and the regulatory team needs
+an answer to three questions before the next retrain is deployed:
+
+1. **Did the deployed model drift?** `POST /snapshot` scores every metric against the locked
+   `ModelBaseline` and returns a verdict (`stable` / `drifted`) with a confidence band.
+   A well-powered unchanged model passes through as HIGH; a thin sample is reported as
+   LOW rather than silently called "fine".
+2. **Is the proposed retrain still covered by the PCCP?** `POST /pccp/evaluate` returns
+   `pre-authorized`, `requires new submission`, or `insufficient information`, with the
+   boundary that was violated if any.
+3. **Is any subgroup being under-served while the aggregate passes?** The fairness check
+   flags each subgroup × metric that exceeds the threshold, with its own confidence band.
+
+`GET /model-card/{model_id}` then bundles all of it into a `ValidationEvidence` JSON
+(plus Markdown/PDF model card) with IEC 62304 safety class and ISO 14971 hazard callouts,
+ready to be attached to the Design History File as objective evidence for a human
+reviewer's sign-off. The tool never makes the go/no-go call; it makes the call auditable.
+
 ## What it does
 
 - Locks a `ModelBaseline` (metrics, dataset hash, FDA SaMD risk class) and ingests
@@ -34,7 +57,9 @@ evidence package for a human reviewer to sign off.
 - Every report carries IEC 62304 software safety class and ISO 14971 hazard language,
   and the disclaimer that it is evidence, not a release decision.
 
-![Dashboard: drift-over-time chart with band-coloured points, PCCP decision log, subgroup fairness table](docs/dashboard.png)
+[![Dashboard: drift-over-time chart with band-coloured points, PCCP decision log, subgroup fairness table](docs/dashboard.png)](https://LSaiko.github.io/ml-samd-validator/)
+
+_Click the screenshot to open the live demo (seeded with synthetic data, no backend required)._
 
 ## Architecture
 
