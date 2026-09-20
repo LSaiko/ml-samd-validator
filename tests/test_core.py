@@ -3,7 +3,7 @@ from datetime import UTC, datetime
 import pytest
 from test_schemas import BASELINE, PCCP
 
-from app.core import check_subgroups, detect_drift, evaluate_change
+from app.core import check_subgroups, detect_drift, evaluate_change, p_value
 from schemas import ConfidenceBand, PerformanceSnapshot, ProposedChange, SubgroupMetrics
 
 TS = datetime(2026, 3, 1, tzinfo=UTC)
@@ -33,6 +33,10 @@ def test_drift_bands(value: float, band: ConfidenceBand, phrase: str) -> None:
     assert report.requires_human_review is (band is not ConfidenceBand.HIGH)
     assert "IEC 62304 software safety class B" in report.iec_62304_note
     assert "ISO 14971" in report.iso_14971_note
+
+
+def test_degenerate_proportion_has_zero_se() -> None:
+    assert p_value("sensitivity", 1.0, 100, 1.0, 100) == 1.0
 
 
 def test_calibration_slope_uses_one_sample_approximation() -> None:

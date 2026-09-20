@@ -27,6 +27,10 @@ def _snap(i: int, sens: float) -> dict:
     }
 
 
+def test_health() -> None:
+    assert client.get("/health").json() == {"status": "ok"}
+
+
 def test_404_without_baseline() -> None:
     assert client.get("/drift/m1").status_code == 404
     assert client.get("/model-card/m1").status_code == 404
@@ -42,6 +46,7 @@ def test_full_flow() -> None:
         client.post("/baseline", json=BASELINE.model_dump(mode="json")).json()["model_id"] == "m1"
     )
     assert client.post("/pccp", json=PCCP.model_dump(mode="json")).status_code == 200
+    assert client.get("/model-card/m1").status_code == 404  # baseline but no snapshots yet
     # sensitivity 0.9 @ n=1000 vs n=500: -0.005 LOW, -0.018 AMBIGUOUS, -0.05 HIGH (see test_core)
     for i, sens in enumerate([0.895, 0.882, 0.85]):
         r = client.post("/snapshot", json=_snap(i, sens)).json()

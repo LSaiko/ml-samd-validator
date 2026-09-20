@@ -50,3 +50,6 @@ ignore_missing_imports = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+
+[tool.coverage.report]
+exclude_also = ["if __name__ == .__main__.:"]

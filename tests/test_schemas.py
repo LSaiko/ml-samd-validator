@@ -80,6 +80,8 @@ def test_extra_forbidden_and_hash_pattern() -> None:
         LockedMetrics.model_validate({**LOCKED.model_dump(), "bogus": 1})
     with pytest.raises(ValidationError):
         ModelBaseline.model_validate({**BASELINE.model_dump(), "dataset_hash": "xyz"})
+    with pytest.raises(ValidationError, match="unknown GMLP principle keys"):
+        ModelCard.model_validate({**CARD.model_dump(), "gmlp_checklist": {"bogus": True}})
 
 
 @pytest.mark.parametrize(
