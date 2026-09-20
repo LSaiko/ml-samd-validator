@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import uuid
 from datetime import date, datetime
 from enum import StrEnum
 from typing import Literal
@@ -148,3 +149,96 @@ class ModelCard(_Strict):
         if unknown:
             raise ValueError(f"unknown GMLP principle keys: {sorted(unknown)}")
         return self
+
+
+# --- Phase 3: core-logic result models -------------------------------------------------
+
+
+class MetricDrift(_Strict):
+    metric: MetricName
+    baseline_value: float
+    snapshot_value: float
+    delta: float
+    p_value: float = Field(ge=0.0, le=1.0)
+    confidence: float = Field(ge=0.0, le=1.0)
+    band: ConfidenceBand
+    reasoning: str
+
+
+class DriftReport(_Strict):
+    model_id: str
+    snapshot_timestamp: datetime
+    metrics: list[MetricDrift]
+    overall_band: ConfidenceBand
+    requires_human_review: bool
+    iec_62304_note: str
+    iso_14971_note: str
+
+
+PccpDecisionKind = Literal["pre-authorized", "requires new submission", "insufficient information"]
+
+
+class PccpDecision(_Strict):
+    model_id: str
+    change_type: str
+    decision: PccpDecisionKind
+    rationale: str
+    violated_boundaries: list[str] = Field(default_factory=list)
+    confidence_band: ConfidenceBand
+
+
+class SubgroupFinding(_Strict):
+    subgroup: str
+    metric: MetricName
+    baseline_value: float
+    subgroup_value: float
+    delta: float
+    flagged: bool
+    confidence: float = Field(ge=0.0, le=1.0)
+    band: ConfidenceBand
+    reasoning: str
+
+
+class FairnessReport(_Strict):
+    model_id: str
+    threshold: float
+    findings: list[SubgroupFinding]
+    any_flagged: bool
+    aggregate_passed: bool
+    note: str = (
+        "Subgroup flags may exist even when aggregate metrics pass; "
+        "aggregate performance does not establish subgroup equity."
+    )
+
+
+# --- Phase 4: stable validation-evidence export (schema_version 1.0) -------------------
+
+
+class Iec62304Classification(_Strict):
+    safety_class: Literal["A", "B", "C"]
+    rationale: str
+
+
+class Iso14971Summary(_Strict):
+    hazards: list[str]
+    risk_controls: list[str]
+    residual_risk_statement: str
+
+
+class ValidationEvidence(_Strict):
+    """Stable JSON export for traceability-matrix-dhf (docs/validation-evidence-schema.md)."""
+
+    schema_version: Literal["1.0"] = "1.0"
+    generated_at: datetime
+    model_id: str
+    version: str
+    baseline: ModelBaseline
+    snapshot: PerformanceSnapshot
+    drift: DriftReport
+    fairness: FairnessReport
+    pccp_status: PccpDecision | None = None
+    model_card: ModelCard | None = None
+    iec_62304: Iec62304Classification
+    iso_14971: Iso14971Summary
+    evidence_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    requirement_ids: list[str] = Field(default_factory=list)
