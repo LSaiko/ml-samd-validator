@@ -4,7 +4,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Live demo](https://img.shields.io/badge/demo-GitHub%20Pages-22d3ee)](https://LSaiko.github.io/ml-samd-validator/)
 
-> Replace `LSaiko` with the GitHub account once the repo is published.
 
 **Drift evidence for FDA-regulated ML: proves a deployed model stayed inside its
 Predetermined Change Control Plan, or flags where it did not.**
