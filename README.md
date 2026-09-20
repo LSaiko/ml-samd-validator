@@ -1,10 +1,10 @@
 # ml-samd-validator
 
-[![CI](https://github.com/<OWNER>/ml-samd-validator/actions/workflows/ci.yml/badge.svg)](https://github.com/<OWNER>/ml-samd-validator/actions/workflows/ci.yml)
+[![CI](https://github.com/LSaiko/ml-samd-validator/actions/workflows/ci.yml/badge.svg)](https://github.com/LSaiko/ml-samd-validator/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Live demo](https://img.shields.io/badge/demo-GitHub%20Pages-22d3ee)](https://<OWNER>.github.io/ml-samd-validator/)
+[![Live demo](https://img.shields.io/badge/demo-GitHub%20Pages-22d3ee)](https://LSaiko.github.io/ml-samd-validator/)
 
-> Replace `<OWNER>` with the GitHub account once the repo is published.
+> Replace `LSaiko` with the GitHub account once the repo is published.
 
 **Drift evidence for FDA-regulated ML: proves a deployed model stayed inside its
 Predetermined Change Control Plan, or flags where it did not.**
@@ -135,9 +135,9 @@ approximation, which is weak for small subgroups (they correctly land in lower b
 
 ## Related projects
 
-- [SaMD-Val-Kit](https://github.com/<OWNER>/SaMD-Val-Kit): validation protocol templates
+- [SaMD-Val-Kit](https://github.com/LSaiko/SaMD-Val-Kit): validation protocol templates
   and V&V planning for SaMD.
-- [traceability-matrix-dhf](https://github.com/<OWNER>/traceability-matrix-dhf) (in
+- [traceability-matrix-dhf](https://github.com/LSaiko/traceability-matrix-dhf) (in
   progress): consumes the `ValidationEvidence` JSON and links each finding to design-history
   file requirements.
 
