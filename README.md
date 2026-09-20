@@ -34,7 +34,7 @@ evidence package for a human reviewer to sign off.
 - Every report carries IEC 62304 software safety class and ISO 14971 hazard language,
   and the disclaimer that it is evidence, not a release decision.
 
-_Screenshot: `docs/dashboard.png` (to be added)._
+![Dashboard: drift-over-time chart with band-coloured points, PCCP decision log, subgroup fairness table](docs/dashboard.png)
 
 ## Architecture
 
