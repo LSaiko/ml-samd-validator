@@ -1,6 +1,11 @@
 # ml-samd-validator
 
 [![CI](https://github.com/LSaiko/ml-samd-validator/actions/workflows/ci.yml/badge.svg)](https://github.com/LSaiko/ml-samd-validator/actions/workflows/ci.yml)
+[![Pages](https://github.com/LSaiko/ml-samd-validator/actions/workflows/pages.yml/badge.svg)](https://github.com/LSaiko/ml-samd-validator/actions/workflows/pages.yml)
+[![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-22d3ee)](pyproject.toml)
+[![Pydantic v2](https://img.shields.io/badge/pydantic-v2-f97316)](https://docs.pydantic.dev/latest/)
+[![Coverage 100%](https://img.shields.io/badge/coverage-100%25-22d3ee)](.github/workflows/ci.yml)
+[![IEC 62304 · ISO 14971](https://img.shields.io/badge/IEC%2062304%20·%20ISO%2014971-94a3b8)](https://www.fda.gov/medical-devices/software-medical-device-samd/good-machine-learning-practice-medical-device-development-guiding-principles)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Live demo](https://img.shields.io/badge/demo-GitHub%20Pages-22d3ee)](https://LSaiko.github.io/ml-samd-validator/)
 
