@@ -190,6 +190,10 @@ approximation, which is weak for small subgroups (they correctly land in lower b
 - [traceability-matrix-dhf](https://github.com/LSaiko/traceability-matrix-dhf)
   ([live demo](https://LSaiko.github.io/traceability-matrix-dhf/)): consumes the
   `ValidationEvidence` JSON and links each finding to design-history file requirements.
+- [part11-audit-trail](https://github.com/LSaiko/part11-audit-trail)
+  ([live demo](https://lsaiko.github.io/part11-audit-trail/)): the Documenter. Hash-chained,
+  append-only audit log and Ed25519 e-signatures (21 CFR Part 11, ALCOA+); the evidence export
+  and PCCP decisions recorded here are the kind of electronic records it would sign and log.
 
 ## Interview Q&A
 
