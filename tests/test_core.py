@@ -149,3 +149,35 @@ def test_subgroup_flag_while_aggregate_passes() -> None:
     assert by["female"].verdict == "stable" and "pass-through" in by["female"].reasoning
     assert "n=30" in by["site_b"].reasoning
     assert not check_subgroups(BASELINE, snap({"sensitivity": 0.8})).aggregate_passed
+
+
+def test_pccp_sop_gaps_demote_band_only() -> None:
+    from datetime import datetime
+
+    from schemas import SopReview
+
+    review = SopReview(
+        sop_file="SOP-042 model retraining.docx",
+        sop_sha256="a" * 64,
+        sop_type="inspection",
+        reviewed_at=datetime(2026, 9, 22),
+        overall_status="NEEDS REVISION",
+        findings=[
+            {"id": "U1", "item": "Purpose", "status": "PRESENT", "extra_key_from_tool": 1},
+            {"id": "I3", "item": "Acceptance criteria", "status": "MISSING", "regulation": "820"},
+        ],
+    )
+    change = ProposedChange(
+        model_id="m1",
+        change_type="retrain",
+        description="Quarterly retrain on additional labelled studies.",
+        expected_metric_deltas={"auc": 0.01},
+        sop_review=review,
+    )
+    d = evaluate_change(PCCP, change)
+    assert d.decision == "pre-authorized"  # gaps never change the decision
+    assert d.confidence_band is ConfidenceBand.AMBIGUOUS
+    assert d.sop_gaps == ["I3 MISSING: Acceptance criteria"] and "sop-review-tool" in d.rationale
+    clean = review.model_copy(update={"findings": [review.findings[0]]})
+    d = evaluate_change(PCCP, change.model_copy(update={"sop_review": clean}))
+    assert d.confidence_band is ConfidenceBand.HIGH and d.sop_gaps == []

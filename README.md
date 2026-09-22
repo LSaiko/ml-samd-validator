@@ -133,6 +133,33 @@ cd dashboard && npx tsc --noEmit && npm run build
 | GET | `/pccp/log/{model_id}` | | decision history |
 | GET | `/model-card/{model_id}` | `?format=json\|markdown` | `ValidationEvidence` or Markdown card |
 
+### Attaching an SOP gap analysis
+
+A retrain is only pre-authorized if it is executed under the PCCP's modification protocol,
+i.e. a controlled SOP. Run [sop-review-tool](https://github.com/LSaiko/sop-review-tool) on
+that SOP and attach its JSON to the `ProposedChange`:
+
+```bash
+python sop_review.py --file SOP-042-retraining.docx --device-class II --sop-type inspection --json-output sop-042.json
+```
+
+```json
+{
+  "model_id": "cxr-triage", "change_type": "retrain",
+  "description": "Quarterly retrain on additional labelled studies.",
+  "expected_metric_deltas": {"auc": 0.01},
+  "sop_review": {
+    "sop_file": "SOP-042-retraining.docx", "sop_sha256": "<sha256 of the reviewed file>",
+    "sop_type": "inspection", "reviewed_at": "2026-09-22T00:00:00Z",
+    "overall_status": "...", "overall_rationale": "...", "findings": [ ...sop-042.json findings... ]
+  }
+}
+```
+
+Any `INCOMPLETE`/`MISSING` finding demotes the `PccpDecision` to AMBIGUOUS and lists the gaps
+in `sop_gaps` and the model card. The decision itself never changes: the review is LLM
+first-pass evidence, so the Inspector routes it to a human rather than acting on it.
+
 ## Regulatory framing
 
 - **IEC 62304 safety class** is derived from the FDA SaMD risk class: I -> A, II -> B,

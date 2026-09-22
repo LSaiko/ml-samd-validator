@@ -417,6 +417,13 @@
           "title": "Violated Boundaries",
           "type": "array"
         },
+        "sop_gaps": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Sop Gaps",
+          "type": "array"
+        },
         "confidence_band": {
           "$ref": "#/$defs/ConfidenceBand"
         }

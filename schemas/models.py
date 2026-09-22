@@ -84,11 +84,47 @@ class PerformanceBoundary(_Strict):
     max_delta: float = Field(ge=0.0)
 
 
+SopItemStatus = Literal["PRESENT", "INCOMPLETE", "MISSING"]
+SopOverallStatus = Literal["READY FOR QA REVIEW", "NEEDS REVISION", "MAJOR GAPS"]
+
+
+class SopReviewFinding(BaseModel):
+    """One checklist row from sop-review-tool `--json-output`; extra keys ignored (not ours)."""
+
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(min_length=1)
+    item: str = Field(min_length=1)
+    regulation: str = ""
+    status: SopItemStatus
+    evidence: str = ""
+    recommendation: str | None = None
+
+
+class SopReview(_Strict):
+    """21 CFR 820 gap analysis of the SOP governing a change (github.com/LSaiko/sop-review-tool).
+
+    LLM first-pass evidence: it can lower a PccpDecision's confidence band, never raise it,
+    and never changes the decision itself.
+    """
+
+    sop_file: str = Field(min_length=1)
+    sop_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    sop_type: Literal["manufacturing", "calibration", "cleaning", "inspection", "complaint"]
+    reviewed_at: datetime
+    overall_status: SopOverallStatus
+    overall_rationale: str = ""
+    findings: list[SopReviewFinding] = Field(min_length=1)
+
+    def gaps(self) -> list[str]:
+        return [f"{f.id} {f.status}: {f.item}" for f in self.findings if f.status != "PRESENT"]
+
+
 class ProposedChange(_Strict):
     model_id: str = Field(min_length=1)
     change_type: str = Field(min_length=1)
     description: str = ""
     expected_metric_deltas: dict[str, float] = Field(default_factory=dict)
+    sop_review: SopReview | None = None
 
 
 class PredeterminedChangeControlPlan(_Strict):
@@ -185,6 +221,7 @@ class PccpDecision(_Strict):
     decision: PccpDecisionKind
     rationale: str
     violated_boundaries: list[str] = Field(default_factory=list)
+    sop_gaps: list[str] = Field(default_factory=list)
     confidence_band: ConfidenceBand
 
 

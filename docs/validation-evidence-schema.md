@@ -57,7 +57,9 @@ All objects are `extra="forbid"`: unknown keys are rejected on ingest.
 
 ### `PccpDecision`
 `model_id`, `change_type`, `decision` (`pre-authorized` | `requires new submission` |
-`insufficient information`), `rationale`, `violated_boundaries[]`, `confidence_band`.
+`insufficient information`), `rationale`, `violated_boundaries[]`, `sop_gaps[]` (21 CFR 820
+checklist items rated INCOMPLETE/MISSING by sop-review-tool; non-empty forces AMBIGUOUS),
+`confidence_band`.
 
 ### `ModelCard`
 `model_id`, `version`, `intended_use`, `training_data_summary`, `performance_by_subgroup[]`,

@@ -197,19 +197,31 @@ def evaluate_change(pccp: PredeterminedChangeControlPlan, change: ProposedChange
         reasons.append(f"matches out_of_scope_changes {scope_hits}")
     if violated:
         reasons.append("expected deltas exceed performance boundaries")
+    # ponytail: SOP gaps only demote the band; deciding what a gap means is the human's job.
+    gaps = change.sop_review.gaps() if change.sop_review else []
+    band = ConfidenceBand.AMBIGUOUS if gaps else ConfidenceBand.HIGH
+    sop_note = (
+        f" Governing SOP {change.sop_review.sop_file!r} rated {change.sop_review.overall_status} "
+        f"by sop-review-tool with {len(gaps)} gap(s); LLM first-pass, human review required."
+        if gaps
+        else ""
+    )
     if reasons:
         return PccpDecision(
             **common,
             decision="requires new submission",
-            rationale="; ".join(reasons) + ".",
+            rationale="; ".join(reasons) + "." + sop_note,
             violated_boundaries=violated,
-            confidence_band=ConfidenceBand.HIGH,
+            sop_gaps=gaps,
+            confidence_band=band,
         )
     return PccpDecision(
         **common,
         decision="pre-authorized",
-        rationale="Change type authorized, not out of scope, expected deltas within boundaries.",
-        confidence_band=ConfidenceBand.HIGH,
+        rationale="Change type authorized, not out of scope, expected deltas within boundaries."
+        + sop_note,
+        sop_gaps=gaps,
+        confidence_band=band,
     )
 
 

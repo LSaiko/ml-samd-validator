@@ -168,6 +168,11 @@ def render_markdown(ev: ValidationEvidence) -> str:
             f"Change `{pccp.change_type}`: **{pccp.decision}** "
             f"({pccp.confidence_band.value}). {pccp.rationale}"
             + (("\n" + _bullets(pccp.violated_boundaries)) if pccp.violated_boundaries else "")
+            + (
+                ("\nSOP gaps (21 CFR 820, LLM first-pass):\n" + _bullets(pccp.sop_gaps))
+                if pccp.sop_gaps
+                else ""
+            )
             if pccp
             else "_No proposed change evaluated._"
             + (f" PCCP reference: {card.pccp_reference}" if card else "")
